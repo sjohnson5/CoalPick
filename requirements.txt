@@ -2,7 +2,7 @@ keras < 2.3
 matplotlib
 numpy
 #obsplus
-obspy
+#obspy
 pandas
 scikit-learn
 scipy

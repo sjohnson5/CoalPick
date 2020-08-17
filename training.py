@@ -3,6 +3,7 @@ from pathlib import Path
 from keras.models import model_from_json
 import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def normalize(array):
@@ -44,7 +45,7 @@ def train_model(model, train_df, reps=3, epochs=2, batch_size=960):
     model.compile(optimizer=tf.train.AdamOptimizer(),
                   loss=tf.losses.huber_loss,
                   metrics=['mean_absolute_error'])
-    # train_df = pd.concat([train_df] * reps)
+    train_df = pd.concat([train_df] * reps)
     train_df = train_df.sample(frac=1)
 
     # Since Ross's model was made/trained on 3 gpu's (https://github.com/kuza55/keras-extras/issues/7)
@@ -65,7 +66,7 @@ def test_model(model, test_df, batch_size=960):
     # adding nan data to fill to a multiple of 3
     cnt = 0
     while len(test_df) % 3 != 0:
-        test_df = test_df.append(pd.Series( name='dumby'))
+        test_df = test_df.append(pd.Series(name='dumby'))
         cnt += 1
 
     xs = np.array(test_df.apply(normalize, axis=1)).reshape(len(test_df), 400, 1)
@@ -77,6 +78,15 @@ def test_model(model, test_df, batch_size=960):
     return results
 
 
+def plot_sample_figure(df, results, i=0, secondary=None):
+    plt.figure()
+    plt.plot(np.array(df.iloc[i]), c='k')
+    plt.axvline(results.iloc[i], c='r', label='Primary')
+    if type(secondary) == pd.Series:
+        plt.axvline(secondary.iloc[i], c='b', label='Secondary')
+        plt.legend()
+
+
 if __name__ == '__main__':
     data_file = 'data.parquet'
     dataset = 'A'
@@ -84,14 +94,25 @@ if __name__ == '__main__':
     model_weights_file = 'models/p_ross_weights.hdf5'
     train_perc = 75
 
+    # loading
     df = load_data(data_file, dataset)
     model = load_model(model_structure_file, model_weights_file)
 
-    df = df[:245]
-
+    df = df.sample(n=254)  # randomly downsampling to have a usable dataset
     train_df = df.sample(frac=train_perc / 100)
+
+    if train_perc != 100:
+        # testing
+        test_df = df.drop(train_df.index)
+        pretest_results = test_model(model, test_df)
+
+    # training
     train_model(model, train_df)
 
     if train_perc != 100:
-        test_df = df.drop(train_df.index)
+        # testing
         test_results = test_model(model, test_df)
+
+        # plotting some test results
+        for i in range(5):
+            plot_sample_figure(test_df, test_results, i=i, secondary=pretest_results)
