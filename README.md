@@ -1,1 +1,3 @@
 # SAMples
+
+This is an exSAMple script for how to use SAM...
