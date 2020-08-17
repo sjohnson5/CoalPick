@@ -1,0 +1,19 @@
+keras < 2.3
+matplotlib
+numpy
+#obsplus
+dbscan1d
+obspy
+pandas
+scikit-learn
+scipy
+tensorflow < 2
+#tensorflow-gpu < 2
+psutil
+pyarrow
+
+#[docs]
+ipykernel
+
+#[tests]
+pytest
