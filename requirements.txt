@@ -1,18 +1,6 @@
 keras < 2.3
 matplotlib
 numpy
-#obsplus
-#obspy
 pandas
-scikit-learn
-scipy
 tensorflow < 2
-#tensorflow-gpu < 2
-psutil
 pyarrow
-
-#[docs]
-ipykernel
-
-#[tests]
-pytest
