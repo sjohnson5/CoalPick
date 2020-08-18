@@ -40,7 +40,22 @@ def load_model(structure_file, weights_file=None):
     return model
 
 
-def train_model(model, train_df, reps=3, epochs=2, batch_size=960):
+def shuffle_data(df):
+    """ shuffles the data randomly and returns 400 sample sections """  # -> (change to when it is 600 samples)
+    offsets = np.random.randint(-50, 50, len(df))
+    new_centers = 200 + offsets  # -> 300
+    old_centers = 100 - offsets  # -> 200
+
+    out = []
+    for i, s, e in zip(df.values, new_centers - 100, new_centers + 100):  # -> -200, +200
+        out.append(i[s:e])
+    out = pd.DataFrame(out, index=df.index)
+
+    old_centers = pd.Series(old_centers, index=df.index)
+    return out, old_centers
+
+
+def train_model(model, train_df, train_labels, reps=3, epochs=2, batch_size=960):
     """ trains a model """
     model.compile(optimizer=tf.train.AdamOptimizer(),
                   loss=tf.losses.huber_loss,
@@ -56,7 +71,7 @@ def train_model(model, train_df, reps=3, epochs=2, batch_size=960):
         train_df = train_df[:-1]
 
     xs = np.array(train_df.apply(normalize, axis=1)).reshape(len(train_df), 400, 1)
-    ys = np.full(len(train_df), 200)
+    ys = train_labels[train_df.index].values
 
     # training model
     model.fit(xs, ys, epochs=epochs, batch_size=batch_size)
@@ -79,6 +94,7 @@ def test_model(model, test_df, batch_size=960):
 
 
 def plot_sample_figure(df, results, i=0, secondary=None):
+    """ plots a figure with a pick or two on it """
     plt.figure()
     plt.plot(np.array(df.iloc[i]), c='k')
     plt.axvline(results.iloc[i], c='r', label='Primary')
@@ -98,16 +114,22 @@ if __name__ == '__main__':
     df = load_data(data_file, dataset)
     model = load_model(model_structure_file, model_weights_file)
 
-    df = df.sample(n=254)  # randomly downsampling to have a usable dataset
+    df = df.sample(n=254)  # randomly downsampling to have a usable dataset; eventually delete this
     train_df = df.sample(frac=train_perc / 100)
+    # train_df, train_labels = shuffle_data(train_df)  # -> do when 600 sample data arrives
+    train_labels = pd.Series(np.full(len(train_df), 200),
+                             index=train_df.index)  # -> delete when 600 sample data arrives
 
     if train_perc != 100:
-        # testing
+        # formatting test dataframe
         test_df = df.drop(train_df.index)
+        # test_df = test_df[100:500]  # -> do when 600 sample data arrives
+
+        # pretesting
         pretest_results = test_model(model, test_df)
 
     # training
-    train_model(model, train_df)
+    train_model(model, train_df, train_labels)
 
     if train_perc != 100:
         # testing
