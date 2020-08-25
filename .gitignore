@@ -82,3 +82,6 @@ plots/*
 
 # datafile
 data.parquet
+
+# models trained for testing filling method
+models/filling/*

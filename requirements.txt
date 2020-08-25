@@ -1,14 +1,5 @@
-keras < 2.3
+pyarrow == 1.0.0
+keras == 2.3.1
 matplotlib
-numpy
-pandas
-tensorflow < 2
-pyarrow
-
-### Here's my specific versions:
-# keras == 2.2.4
-# matplotlib == 3.0.3
-# numpy == 1.16.2
-# pandas == 0.24.2
-# tensorflow == 1.14.0
-# pyarrow == 0.15.1
+numpy == 1.18.1
+tensorflow == 1.13.1
