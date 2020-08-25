@@ -88,6 +88,8 @@ def plot_residuals(residuals, output_path):
     if output_path is not None:
         output_path.parent.mkdir(exist_ok=True, parents=True)
         plt.savefig(output_path)
+    else:
+        return fig
 
 
 def plot_waveforms(waveform, picks, output_path=None, buffer=30):
@@ -106,19 +108,22 @@ def plot_waveforms(waveform, picks, output_path=None, buffer=30):
     if output_path is not None:
         output_path.parent.mkdir(exist_ok=True, parents=True)
         plt.savefig(output_path)
-
+    else:
+        return fig
 
 def plot_training(history, output_path=None):
     """Plots the training history."""
     # Plot each metric provided by history.
+    fig, ax = plt.subplots(1, 1)
     for metric_name, metric in history.items():
         epoch = range(1, len(metric) + 1)
-        plt.plot(epoch, metric, label=metric_name)
-    plt.xlabel('epoch')
-    plt.legend()
+        ax.plot(epoch, metric, label=metric_name)
+    ax.set_xlabel('epoch')
+    ax.legend()
     # Save output
     if output_path is not None:
         output_path.parent.mkdir(exist_ok=True, parents=True)
         plt.savefig(output_path)
-
+    else:
+        return fig
 

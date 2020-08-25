@@ -8,11 +8,9 @@ from pathlib import Path
 
 import numpy as np
 
-from SAMple.core import (
-    fit,
-    predict,
+from SAMple import cnn
+from SAMple.prep_utils import (
     load_data,
-    load_model,
     shuffle_data,
     train_test_split,
 )
@@ -35,7 +33,7 @@ if __name__ == "__main__":
     df = load_data(data_file, dataset)
 
     # Load the keras models and weights
-    model = load_model(model_structure_path, model_weights_path)
+    model = cnn.load_model(model_structure_path, model_weights_path)
 
     # Split input dataframe into training and testing
     random_state = np.random.RandomState(seed=42)  # Use reproducible random states
@@ -48,17 +46,17 @@ if __name__ == "__main__":
     X_test, y_test = shuffle_data(test_df)
 
     # Make predictions before (re)training the model
-    predict_pre_train = predict(model, X_test)
+    predict_pre_train = cnn.predict(model, X_test)
 
     # Train model
-    history = fit(model, X_train, y_train, epochs=training_epochs,
+    history = cnn.fit(model, X_train, y_train, epochs=training_epochs,
                   validation_data=(X_test, y_test))
 
     # Save weights (uncomment next line to save the weights from training)
     # model.save_weights(output_weights_path)
 
     # Make predictions after (re)training the model
-    predict_post_train = predict(model, X_test)
+    predict_post_train = cnn.predict(model, X_test)
 
     # Make plots
     if plot_path is not None:
