@@ -16,7 +16,6 @@ from SAMple.prep_utils import (
 )
 from SAMple.plot import plot_residuals, plot_waveforms, plot_training
 
-
 if __name__ == "__main__":
     # Script control parameters
     data_file = Path("data.parquet")  # Path to data file
@@ -50,7 +49,7 @@ if __name__ == "__main__":
 
     # Train model
     history = cnn.fit(model, X_train, y_train, epochs=training_epochs,
-                  validation_data=(X_test, y_test))
+                      validation_data=(X_test, y_test))
 
     # Save weights (uncomment next line to save the weights from training)
     # model.save_weights(output_weights_path)
