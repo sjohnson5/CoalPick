@@ -12,7 +12,7 @@ import tensorflow as tf
 from keras.models import model_from_json
 
 
-def fit(model, data, target, epochs=2, batch_size=960, validation_data=None):
+def fit(model, data, target, epochs=2, layers_to_train=None, batch_size=960, validation_data=None):
     """
     Trains the model (modifies existing model in place).
 
@@ -27,7 +27,18 @@ def fit(model, data, target, epochs=2, batch_size=960, validation_data=None):
     epochs
         The epochs for training. Each epoch represents a complete pass through
         the entire training dataset.
+    layers_to_train
+        number of layers to train (startting with the last layer), i.e. if layers_to_train is 2 the
+        last 2 layers will get trained. Default is to train all layers.
     """
+    # setting trainability of model layers
+    if layers_to_train is not None:
+        old_layer_trainability = [layer.trainable for layer in model.layers]
+        assert layers_to_train < len(model.layers)
+        stop = len(model.layers) - layers_to_train
+        for layer in model.layers[:stop]:
+            layer.trainable = False
+
     model.compile(
         optimizer=tf.train.AdamOptimizer(),
         loss=tf.losses.huber_loss,
@@ -43,6 +54,11 @@ def fit(model, data, target, epochs=2, batch_size=960, validation_data=None):
 
     history = model.fit(X, y, epochs=epochs, batch_size=batch_size,
                         validation_data=validation_data)
+
+    # setting trainability of model layers back to the way it was
+    if layers_to_train is not None:
+        for layer, trainability in zip(model.layers, old_layer_trainability):
+            layer.trainable = trainability
     return history
 
 
