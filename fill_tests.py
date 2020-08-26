@@ -27,7 +27,7 @@ from CoalPick.plot import plot_residuals, plot_waveforms
 PRE_PICK_SAMPLES_TO_KEEP = (50, 100, 150)
 
 
-def plot_fill_results(df, *, cmap='viridis', save_path=None):
+def plot_fill_results(df, *, cmap="viridis", save_path=None):
     """
     Plot performance of various fill methods.
 
@@ -47,7 +47,7 @@ def plot_fill_results(df, *, cmap='viridis', save_path=None):
     fig, ax = plt.subplots()
 
     # n_classes = cm.shape[0]
-    image = ax.imshow(cm, interpolation='nearest', cmap=cmap)
+    image = ax.imshow(cm, interpolation="nearest", cmap=cmap)
     cmap_min, cmap_max = image.cmap(0), image.cmap(256)
 
     text_ = np.empty_like(cm, dtype=object)
@@ -58,24 +58,23 @@ def plot_fill_results(df, *, cmap='viridis', save_path=None):
     for i, j in product(label_inds, label_inds):
         color = cmap_max if cm[i, j] < thresh else cmap_min
 
-        text_cm = format(cm[i, j], '.2g')
-        if cm.dtype.kind != 'f':
-            text_d = format(cm[i, j], 'd')
+        text_cm = format(cm[i, j], ".2g")
+        if cm.dtype.kind != "f":
+            text_d = format(cm[i, j], "d")
             if len(text_d) < len(text_cm):
                 text_cm = text_d
 
-        text_[i, j] = ax.text(
-            j, i, text_cm,
-            ha="center", va="center",
-            color=color)
+        text_[i, j] = ax.text(j, i, text_cm, ha="center", va="center", color=color)
 
     fig.colorbar(image, ax=ax)
-    ax.set(xticks=label_inds,
-           yticks=label_inds,
-           xticklabels=labels,
-           yticklabels=labels,
-           ylabel="Test Data",
-           xlabel="Training Data")
+    ax.set(
+        xticks=label_inds,
+        yticks=label_inds,
+        xticklabels=labels,
+        yticklabels=labels,
+        ylabel="Test Data",
+        xlabel="Training Data",
+    )
 
     # ax.set_ylim((n_classes - 0.5, -0.5))
     plt.setp(ax.get_xticklabels(), rotation=45)
@@ -88,24 +87,25 @@ def plot_fill_results(df, *, cmap='viridis', save_path=None):
 
 def make_filled_dfs(train_df, test_df):
     """Create dataframes which are filled """
+
     def _nanify(df, samples_to_keep):
         """Create a copy of the dataframe with NaNs to simulate missing data."""
         df = df.copy()
-        pick_ind = df[('stats', 'pick_sample')]
+        pick_ind = df[("stats", "pick_sample")]
         # All the pick indices should be the same
         pick_ind_unique = pick_ind.unique()
         assert len(pick_ind_unique) == 1
         to_clear = pick_ind_unique[0] - samples_to_keep
-        data = df['data']
+        data = df["data"]
         # Fill
         data.loc[:, :to_clear] = np.NAN
-        df['data'] = data
+        df["data"] = data
         return df
 
     def repeat(df):
         """Repeat data before p pick."""
-        pick_ind = df[('stats', 'pick_sample')]
-        data = df['data']
+        pick_ind = df[("stats", "pick_sample")]
+        data = df["data"]
         first_non_nan = int(data.isnull().idxmin(axis=1).iloc[0])
         repeat_inds = slice(int(first_non_nan), pick_ind.iloc[0])
         repeat_chunks = data.values[:, repeat_inds]
@@ -113,17 +113,17 @@ def make_filled_dfs(train_df, test_df):
         start = first_non_nan - size
         data_array = data.values
         while start >= 0:
-            data_array[:, start: start + size] = repeat_chunks
+            data_array[:, start : start + size] = repeat_chunks
             start -= size
         if start != -size:
-            data_array[:, :start + size] = repeat_chunks[:start + size]
-        df['data'] = pd.DataFrame(data_array, index=data.index, columns=data.columns)
+            data_array[:, : start + size] = repeat_chunks[: start + size]
+        df["data"] = pd.DataFrame(data_array, index=data.index, columns=data.columns)
         return df
 
     df = pd.concat([train_df, test_df])
     nan_df = {s: _nanify(df, s) for s in PRE_PICK_SAMPLES_TO_KEEP}
-    df_with_zeros = {f'zeros_{s}': v.fillna(value=0) for s, v in nan_df.items()}
-    df_with_repeated = {f'repeat_{s}': repeat(v) for s, v in nan_df.items()}
+    df_with_zeros = {f"zeros_{s}": v.fillna(value=0) for s, v in nan_df.items()}
+    df_with_repeated = {f"repeat_{s}": repeat(v) for s, v in nan_df.items()}
     df_with_zeros.update(df_with_repeated)
     return {
         i: (v.loc[train_df.index], v.loc[test_df.index])
@@ -179,9 +179,9 @@ if __name__ == "__main__":
     train_fraction = 0.75  # fraction of traces to use for training
     training_data_repeat = 3  # Number of times to repeat training data
     training_epochs = 5  # Number of passes through training dataset
-    model_path = Path('models/filling')
-    mean_error_path = Path('plots') / 'fill_error.png'
-    test_results_path = Path('plots') / 'fill_tests.pkl'
+    model_path = Path("models/filling")
+    mean_error_path = Path("plots") / "fill_error.png"
+    test_results_path = Path("plots") / "fill_tests.pkl"
 
     # Load input data from parquet file
     df = load_data(data_file, dataset)
@@ -195,7 +195,7 @@ if __name__ == "__main__":
         df, train_fraction=train_fraction, random_state=random_state
     )
     df_dict = make_filled_dfs(train_df, test_df)
-    df_dict['base'] = (train_df, test_df)
+    df_dict["base"] = (train_df, test_df)
 
     # load/train models
     model_dict = _load_or_train_base_model(df_dict)
@@ -206,11 +206,8 @@ if __name__ == "__main__":
     else:
         df = pd.read_pickle(test_results_path)
 
-
-
     # Plot results
-    plot_fill_results(df, save_path=Path('plots') / 'fill_results.png')
+    plot_fill_results(df, save_path=Path("plots") / "fill_results.png")
 
     breakpoint()
     df.iloc[df_name, model_name]
-

@@ -16,6 +16,7 @@ from CoalPick.prep_utils import (
 )
 from CoalPick.plot import plot_residuals, plot_waveforms, plot_training
 
+
 if __name__ == "__main__":
     # ------------------------------------- CONTROL PARAMETERS ----------------------- #
     # input parameters
@@ -43,10 +44,15 @@ if __name__ == "__main__":
     df = df.sample(n=500)  # used for testing this script with less data
 
     # Split input dataframe into training and testing
-    random_state = np.random.RandomState(seed=42)  # Use reproducible random states
-    train_df, test_df = train_test_split(
-        df, train_fraction=train_fraction, random_state=random_state
-    )
+    # Uncomment the next lines for a random split
+    # random_state = np.random.RandomState(seed=42)  # Use reproducible random states
+    # train_df, test_df = train_test_split(
+    #     df, train_fraction=train_fraction, random_state=random_state
+    # )
+
+    # Else use the training/test data selected in the paper
+    train_df = df[df[('stats', 'used_for_training')]]
+    test_df = df[~df[('stats', 'used_for_training')]]
 
     # Get arrays with analyst pick shuffled +/- 50 samples and analyst pick
     X_train, y_train = shuffle_data(train_df, repeat=training_data_repeat)
@@ -60,8 +66,13 @@ if __name__ == "__main__":
     cnn_pre_train = cnn.predict(model, X_test)
 
     # Train model
-    history = cnn.fit(model, X_train, y_train, epochs=training_epochs,
-                      validation_data=(X_test, y_test))
+    history = cnn.fit(
+        model,
+        X_train,
+        y_train,
+        epochs=training_epochs,
+        validation_data=(X_test, y_test),
+    )
 
     # Save weights (uncomment next line to save the weights from training)
     # model.save_weights(output_weights_path)
@@ -83,13 +94,20 @@ if __name__ == "__main__":
     if plot_path is not None:
 
         # Plot training losses
-        plot_training(history.history, plot_path / 'training.png')
+        plot_training(history.history, plot_path / "training.png")
 
         # Plot residual histograms
-        predictions = {"Base CNN": cnn_pre_train,
-                       "Trained Baer": baer_post_train,
-                       "Trained CNN": cnn_post_train}
-        plot_residuals(predictions, y_test, sr=sr, output_path=plot_path / "residual_histograms.png")
+        predictions = {
+            "Base CNN": cnn_pre_train,
+            "Trained Baer": baer_post_train,
+            "Trained CNN": cnn_post_train,
+        }
+        plot_residuals(
+            predictions,
+            y_test,
+            sr=sr,
+            output_path=plot_path / "residual_histograms.png",
+        )
 
         # Plot the first 5 waveforms and their picks.
         for i in range(5):

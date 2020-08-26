@@ -73,9 +73,9 @@ def shuffle_data(df, offset=50, array_len=400, repeat=1):
 
 
 def train_test_split(
-        df: pd.DataFrame,
-        train_fraction: float = 0.75,
-        random_state: Optional[np.random.RandomState] = None,
+    df: pd.DataFrame,
+    train_fraction: float = 0.75,
+    random_state: Optional[np.random.RandomState] = None,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Split the dataframe into training and testing dataframes.

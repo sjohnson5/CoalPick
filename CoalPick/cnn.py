@@ -14,7 +14,15 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 from CoalPick.prep_utils import normalize
 
 
-def fit(model, data, target, epochs=None, layers_to_train=None, batch_size=960, validation_data=None):
+def fit(
+    model,
+    data,
+    target,
+    epochs=None,
+    layers_to_train=None,
+    batch_size=960,
+    validation_data=None,
+):
     """
     Trains the model (modifies existing model in place).
 
@@ -45,8 +53,7 @@ def fit(model, data, target, epochs=None, layers_to_train=None, batch_size=960, 
         if isinstance(layers_to_train, int):
             num_layers = len(model.layers)
             layers_to_train = [
-                x >= (num_layers - layers_to_train)
-                for x in range(num_layers)
+                x >= (num_layers - layers_to_train) for x in range(num_layers)
             ]
         for layer, should_train in zip(model.layers, layers_to_train):
             layer.trainable = should_train
@@ -57,11 +64,11 @@ def fit(model, data, target, epochs=None, layers_to_train=None, batch_size=960, 
         if epochs is not None:
             return []
         checkpoint = EarlyStopping(
-            monitor='val_mean_absolute_error',
+            monitor="val_mean_absolute_error",
             min_delta=0,
             patience=5,
-            mode='min',
-            restore_best_weights=True
+            mode="min",
+            restore_best_weights=True,
         )
         return [checkpoint]
 
@@ -83,9 +90,14 @@ def fit(model, data, target, epochs=None, layers_to_train=None, batch_size=960, 
     if validation_data:
         validation_data = _preprocess(*validation_data)
 
-    history = model.fit(X, y, epochs=epochs or 50, batch_size=batch_size,
-                        validation_data=validation_data,
-                        callbacks=callbacks)
+    history = model.fit(
+        X,
+        y,
+        epochs=epochs or 50,
+        batch_size=batch_size,
+        validation_data=validation_data,
+        callbacks=callbacks,
+    )
 
     # setting trainability of model layers back to the way it was
     _set_trainable_layers(model, old_layer_trainability)
@@ -116,7 +128,7 @@ def predict(model: keras.Model, data: np.ndarray, batch_size: int = 960) -> np.n
 
 
 def _preprocess(
-        X: np.ndarray, y: Optional[np.newaxis] = None, fill: bool = False
+    X: np.ndarray, y: Optional[np.newaxis] = None, fill: bool = False
 ) -> Tuple[np.ndarray, np.ndarray]:
     """ Apply preprocessing to data """
 
@@ -155,7 +167,7 @@ def _preprocess(
 
 
 def load_model(
-        structure_path: Path, weights_path: Optional[Path] = None
+    structure_path: Path, weights_path: Optional[Path] = None
 ) -> keras.Model:
     """
     Load a keras model and, optionally, its weights.

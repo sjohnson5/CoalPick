@@ -6,8 +6,9 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 
-def plot_residuals(predictions: dict, target: np.ndarray, sr, output_path=None,
-                   colors=None, rng=10):
+def plot_residuals(
+    predictions: dict, target: np.ndarray, sr, output_path=None, colors=None, rng=10
+):
     """
     Plot the pick time residuals (predicted - analyst) and statistics for each set of predictions.
 
@@ -44,10 +45,12 @@ def plot_residuals(predictions: dict, target: np.ndarray, sr, output_path=None,
             res = pred - target
             clean = _remove_outliers(res)
             abs_res = abs(res)
-            temp_stats = dict(mean=clean.mean(),
-                              std=clean.std(),
-                              q75=np.quantile(abs_res, 0.75),
-                              q90=np.quantile(abs_res, 0.9))
+            temp_stats = dict(
+                mean=clean.mean(),
+                std=clean.std(),
+                q75=np.quantile(abs_res, 0.75),
+                q90=np.quantile(abs_res, 0.9),
+            )
             stats[pkr] = temp_stats
         return stats
 
@@ -98,7 +101,7 @@ def plot_residuals(predictions: dict, target: np.ndarray, sr, output_path=None,
             )
 
     if colors is None:
-        colors = ['#1f77b4', '#ff7f0e', '#8c564b']
+        colors = ["#1f77b4", "#ff7f0e", "#8c564b"]
     stats = _get_stats(predictions, target)
 
     fig = plt.figure(figsize=(4, 2 * len(predictions)))
@@ -120,7 +123,7 @@ def plot_residuals(predictions: dict, target: np.ndarray, sr, output_path=None,
 
             if cnt == len(predictions) - 1:
                 # addings second axis
-                ax.set_xlabel('samples')
+                ax.set_xlabel("samples")
                 ax2 = ax.twiny()
                 new_pos = np.arange(-rng, rng + 1, rng / 2)
                 new_labels = [n / sr for n in new_pos]
@@ -170,7 +173,7 @@ def plot_training(history, output_path=None):
     for metric_name, metric in history.items():
         epoch = range(1, len(metric) + 1)
         ax.plot(epoch, metric, label=metric_name)
-    ax.set_xlabel('epoch')
+    ax.set_xlabel("epoch")
     ax.legend()
     # Save output
     if output_path is not None:
