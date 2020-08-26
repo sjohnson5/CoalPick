@@ -1,14 +1,12 @@
 """
 Plotting functionality of SAMple.
 """
-from itertools import product
-
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
 
-def plot_residuals(residuals, output_path):
+def plot_residuals(residuals, output_path=None):
     """
     Plot the pick time residuals (predicted - analyst) and statistics.
     """
@@ -28,7 +26,8 @@ def plot_residuals(residuals, output_path):
         ax.grid(True)
 
         # plotting hist
-        n, bins, patches = ax.hist(clean, alpha=0.35, color=color)
+        n, bins, patches = ax.hist(clean, alpha=0.35, color=color,
+                                   bins=np.arange(int(min(clean) - 1), int(max(clean) + 2)))
         ax.set_ylabel("Count")
 
         # # plotting line
