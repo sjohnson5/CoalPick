@@ -96,9 +96,8 @@ def train_test_split(
 
 def normalize(array, axis=-1):
     """
-    Normalize an array along the last axis.
+    Divide the array by the max abs value along a given axis.
     """
-    is_null = np.isnan(array)
     # mean = array.mean(axis=axis, keepdims=True)
     abs_max = np.abs(array).max(axis=axis, keepdims=True)
     return array / abs_max

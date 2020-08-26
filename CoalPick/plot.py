@@ -110,6 +110,7 @@ def plot_waveforms(waveform, picks, output_path=None, buffer=30):
     else:
         return fig
 
+
 def plot_training(history, output_path=None):
     """Plots the training history."""
     # Plot each metric provided by history.

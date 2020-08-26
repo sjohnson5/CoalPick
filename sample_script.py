@@ -24,7 +24,9 @@ if __name__ == "__main__":
     sr = 500  # Sampling rate for the given dataset
     train_fraction = 0.75  # fraction of traces to use for training
     training_data_repeat = 5  # Number of times to repeat training data
-    training_epochs = 25  # Number of passes through training dataset
+    # Define number of passes through training data. If None, allow up to 50
+    # but stop after no improvements to validation are observed for 5 epochs
+    training_epochs = None
 
     # cnn parameters
     model_structure_path = Path("models/p_json_model.json")

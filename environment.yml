@@ -11,3 +11,5 @@ dependencies:
   - numpy=1.18.1
   - tensorflow=1.13.1
   - scikit-learn
+  - scipy>0.15
+  - obspy

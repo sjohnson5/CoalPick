@@ -9,11 +9,12 @@ import keras
 import numpy as np
 import tensorflow as tf
 from keras.models import model_from_json
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 from CoalPick.prep_utils import normalize
 
 
-def fit(model, data, target, epochs=2, layers_to_train=None, batch_size=960, validation_data=None):
+def fit(model, data, target, epochs=None, layers_to_train=None, batch_size=960, validation_data=None):
     """
     Trains the model (modifies existing model in place).
 
@@ -27,18 +28,47 @@ def fit(model, data, target, epochs=2, layers_to_train=None, batch_size=960, val
         The target values the model should learn to predict.
     epochs
         The epochs for training. Each epoch represents a complete pass through
-        the entire training dataset.
+        the entire training dataset. If None, train until no improvement to
+        validation score is observed for 5 epochs and use best weights found
+        through entire training process. Allow training for up to 50 epochs.
     layers_to_train
         number of layers to train (startting with the last layer), i.e. if layers_to_train is 2 the
         last 2 layers will get trained. Default is to train all layers.
     """
+
+    def _set_trainable_layers(model, layers_to_train):
+        """Set certain layers as trainable."""
+        if layers_to_train is None:
+            return
+        # first get a list of booleans the same length as layers indicating
+        # if each layer is to be trained.
+        if isinstance(layers_to_train, int):
+            num_layers = len(model.layers)
+            layers_to_train = [
+                x >= (num_layers - layers_to_train)
+                for x in range(num_layers)
+            ]
+        for layer, should_train in zip(model.layers, layers_to_train):
+            layer.trainable = should_train
+        return model
+
+    def _get_callbacks():
+        """Return a list of keras callbacks and path to new best weights."""
+        if epochs is not None:
+            return []
+        checkpoint = EarlyStopping(
+            monitor='val_mean_absolute_error',
+            min_delta=0,
+            patience=5,
+            mode='min',
+            restore_best_weights=True
+        )
+        return [checkpoint]
+
     # setting trainability of model layers
-    if layers_to_train is not None:
-        old_layer_trainability = [layer.trainable for layer in model.layers]
-        assert layers_to_train < len(model.layers)
-        stop = len(model.layers) - layers_to_train
-        for layer in model.layers[:stop]:
-            layer.trainable = False
+    old_layer_trainability = [layer.trainable for layer in model.layers]
+    _set_trainable_layers(model, layers_to_train)
+    callbacks = _get_callbacks()
 
     model.compile(
         optimizer=tf.train.AdamOptimizer(),
@@ -53,13 +83,12 @@ def fit(model, data, target, epochs=2, layers_to_train=None, batch_size=960, val
     if validation_data:
         validation_data = _preprocess(*validation_data)
 
-    history = model.fit(X, y, epochs=epochs, batch_size=batch_size,
-                        validation_data=validation_data)
+    history = model.fit(X, y, epochs=epochs or 50, batch_size=batch_size,
+                        validation_data=validation_data,
+                        callbacks=callbacks)
 
     # setting trainability of model layers back to the way it was
-    if layers_to_train is not None:
-        for layer, trainability in zip(model.layers, old_layer_trainability):
-            layer.trainable = trainability
+    _set_trainable_layers(model, old_layer_trainability)
     return history
 
 
