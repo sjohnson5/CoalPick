@@ -56,7 +56,6 @@ def plot_residuals(predictions: dict, target: np.ndarray, sr, output_path=None,
 
         # plotting hist
         n, bins, patches = ax.hist(res, alpha=0.35, color=color, bins=bins)
-        ax.set_ylabel("Count")
 
         # # plotting line
         hists, _bins = np.histogram(res, bins=bins)
@@ -114,9 +113,13 @@ def plot_residuals(predictions: dict, target: np.ndarray, sr, output_path=None,
             master_ax = fig.add_subplot(len(predictions), 1, 1)
             _subplot_hists(master_ax, res, color, bins, pkr_stats)
             plt.setp(master_ax.get_xticklabels(), visible=False)
+
+            master_ax.set_ylabel(pkr)
         else:
             ax = fig.add_subplot(len(predictions), 1, cnt + 1, sharey=master_ax)
             _subplot_hists(ax, res, color, bins, pkr_stats)
+
+            ax.set_ylabel(pkr)
 
             if cnt == len(predictions) - 1:
                 # addings second axis
