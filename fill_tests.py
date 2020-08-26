@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from SAMple.cnn import (
+from CoalPick.cnn import (
     fit,
     predict,
     load_data,
@@ -21,7 +21,7 @@ from SAMple.cnn import (
     shuffle_data,
     train_test_split,
 )
-from SAMple.plot import plot_residuals, plot_waveforms
+from CoalPick.plot import plot_residuals, plot_waveforms
 
 
 PRE_PICK_SAMPLES_TO_KEEP = (50, 100, 150)

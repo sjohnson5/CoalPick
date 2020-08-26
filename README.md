@@ -1,23 +1,23 @@
-# SAMple
+# CoalPick
 
-This is an exSAMple script for basic usage of the CNN created by Ross et al. (2018)
-on MIS data mentioned in Johnson et al. (2020).
+This is an example script for basic usage of the CNN created by Ross et al. (2018)
+on MIS data mentioned in Johnson et al. (2020). As well as optimizing a Baer picker in a similar format.
 
 ## Installation
 
 You must first install [Anaconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html).5DGFJB
 
-Next, clone SAMple.
+Next, clone CoalPick.
 ```bash
-clone https://github.com/sjohnson5/SAMples
+clone https://github.com/sjohnson5/CoalPick
 ```
-and cd into the newly created SAMples directory.
+and cd into the newly created CoalPick directory.
 ```bash
-cd SAMples
+cd CoalPick
 ```
 Now download the data from the following dataverse repo:
 (https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/5DGFJB)
-and put the data.parquet file into the SAMples directory.
+and put the data.parquet file into the CoalPick directory.
 
 
 Then create a conda environment using the provided environment.yml file:

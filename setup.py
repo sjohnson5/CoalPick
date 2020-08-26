@@ -1,5 +1,5 @@
 """
-Setup script for SAMple
+Setup script for CoalPick
 """
 import glob
 from os.path import join, exists, isdir
@@ -12,7 +12,7 @@ here = Path(__file__).absolute().parent
 readme_path = here / "README.md"
 # get requirement paths
 package_req_path = here / "requirements.txt"
-version_file = here / "SAMple" / "version.py"
+version_file = here / "CoalPick" / "version.py"
 
 
 def find_packages(base_dir="."):
@@ -62,15 +62,15 @@ def load_file(path):
 requires = read_requirements(package_req_path)
 
 setup(
-    name="SAMple",
+    name="CoalPick",
     version=get_version(version_file),
     description="Example code for picking phases with CNN (Johnson et al., 2020)",
     long_description=load_file(readme_path),
     author="Sean Johnson ",
     author_email="sjohnson10@zagmail.gonzaga.edu",
     url="https://github.com/sjohnson5/SAMples",
-    packages=find_packages("SAMple"),
-    package_dir={"SAMple": "SAMple"},
+    packages=find_packages("CoalPick"),
+    package_dir={"CoalPick": "CoalPick"},
     license="GNU Lesser General Public License v3.0 or later (LGPLv3.0+)",
     zip_safe=False,
     keywords="CNN",

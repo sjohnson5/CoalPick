@@ -8,13 +8,13 @@ from pathlib import Path
 
 import numpy as np
 
-from SAMple import cnn, baer
-from SAMple.prep_utils import (
+from CoalPick import cnn, baer
+from CoalPick.prep_utils import (
     load_data,
     shuffle_data,
     train_test_split,
 )
-from SAMple.plot import plot_residuals, plot_waveforms, plot_training
+from CoalPick.plot import plot_residuals, plot_waveforms, plot_training
 
 if __name__ == "__main__":
     # ------------------------------------- CONTROL PARAMETERS ----------------------- #
