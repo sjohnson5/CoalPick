@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # ------------------------------------- PREPROCESSING ---------------------------- #
     # Load input data from parquet file
     df = load_data(data_file, dataset)
-    # df = df.sample(n=200)  # used for testing this script with less data
+    df = df.sample(n=500)  # used for testing this script with less data
 
     # Split input dataframe into training and testing
     random_state = np.random.RandomState(seed=42)  # Use reproducible random states
@@ -84,13 +84,10 @@ if __name__ == "__main__":
         plot_training(history.history, plot_path / 'training.png')
 
         # Plot residual histograms
-        plot_residuals(cnn_pre_train - y_test,
-                       plot_path / "pre_train_cnn_residuals.png")
-        plot_residuals(cnn_post_train - y_test,
-                       plot_path / "post_train_cnn_residuals.png")
-        plot_residuals(baer_post_train - y_test,
-                       plot_path / "optimized_baer_residuals.png"
-                       )
+        predictions = {"Base CNN": cnn_pre_train,
+                       "Trained Baer": baer_post_train,
+                       "Trained CNN": cnn_post_train}
+        plot_residuals(predictions, y_test, sr=sr, output_path=plot_path / "residual_histograms.png")
 
         # Plot the first 5 waveforms and their picks.
         for i in range(5):

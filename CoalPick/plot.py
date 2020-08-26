@@ -6,9 +6,25 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 
-def plot_residuals(residuals, output_path=None):
+def plot_residuals(predictions: dict, target: np.ndarray, sr, output_path=None,
+                   colors=None, rng=10):
     """
-    Plot the pick time residuals (predicted - analyst) and statistics.
+    Plot the pick time residuals (predicted - analyst) and statistics for each set of predictions.
+
+    Parameters
+    ----------
+    predictions
+        Dictionary on {name: prediction_array, ...}
+    target
+        Targeted array
+    sr
+        Sampling rate of the given dataset
+    output_path
+        path to save the figure to
+    colors
+        list of colors to use for each plot
+    rng
+        +/-x axis range (in samples) (i.e. if rng=10, the x axis will be -10 -> 10)
     """
 
     def _remove_outliers(residuals):
@@ -22,16 +38,28 @@ def plot_residuals(residuals, output_path=None):
         too_low = residuals < outer_low
         return residuals[~(too_high | too_low)]
 
-    def _subplot_hists(ax, clean, color="b", stats=None):
+    def _get_stats(predictions, target):
+        stats = {}
+        for pkr, pred in predictions.items():
+            res = pred - target
+            clean = _remove_outliers(res)
+            abs_res = abs(res)
+            temp_stats = dict(mean=clean.mean(),
+                              std=clean.std(),
+                              q75=np.quantile(abs_res, 0.75),
+                              q90=np.quantile(abs_res, 0.9))
+            stats[pkr] = temp_stats
+        return stats
+
+    def _subplot_hists(ax, res, color, bins, stats):
         ax.grid(True)
 
         # plotting hist
-        n, bins, patches = ax.hist(clean, alpha=0.35, color=color,
-                                   bins=np.arange(int(min(clean) - 1), int(max(clean) + 2)))
+        n, bins, patches = ax.hist(res, alpha=0.35, color=color, bins=bins)
         ax.set_ylabel("Count")
 
         # # plotting line
-        hists, _bins = np.histogram(clean, bins=bins)
+        hists, _bins = np.histogram(res, bins=bins)
         assert np.array_equal(bins, _bins)
         xs = np.repeat(bins, 2)[1:-1]
         ys = np.repeat(hists, 2)
@@ -69,24 +97,48 @@ def plot_residuals(residuals, output_path=None):
                 horizontalalignment="right",
             )
 
-    # Use outer fence to remove outliers and get abs of residuals
-    clean = _remove_outliers(residuals)
-    abs_residuals = abs(residuals)
+    if colors is None:
+        colors = ['#1f77b4', '#ff7f0e', '#8c564b']
+    stats = _get_stats(predictions, target)
 
-    # get stats used in paper
-    stats = dict(
-        std=np.std(clean),
-        mean=np.mean(clean),
-        q75=np.quantile(abs_residuals, 0.75),
-        q90=np.quantile(abs_residuals, 0.90),
-    )
+    fig = plt.figure(figsize=(4, 2 * len(predictions)))
+    bins = np.arange(-rng, rng + 1)
 
-    fig, ax = plt.subplots(1, 1)
-    _subplot_hists(ax, clean, stats=stats)
-    ax.set_xlabel("Pick Residuals (samples)")
+    for cnt, (pkr, pred) in enumerate(predictions.items()):
+        res = pred - target
+
+        color = colors[cnt]
+        pkr_stats = stats[pkr]
+
+        if cnt == 0:
+            master_ax = fig.add_subplot(len(predictions), 1, 1)
+            _subplot_hists(master_ax, res, color, bins, pkr_stats)
+            plt.setp(master_ax.get_xticklabels(), visible=False)
+        else:
+            ax = fig.add_subplot(len(predictions), 1, cnt + 1, sharey=master_ax)
+            _subplot_hists(ax, res, color, bins, pkr_stats)
+
+            if cnt == len(predictions) - 1:
+                # addings second axis
+                ax.set_xlabel('samples')
+                ax2 = ax.twiny()
+                new_pos = np.arange(-rng, rng + 1, rng / 2)
+                new_labels = [n / sr for n in new_pos]
+                ax2.set_xticks(new_pos)
+                ax2.set_xticklabels(new_labels)
+                ax2.xaxis.set_ticks_position("bottom")
+                ax2.xaxis.set_label_position("bottom")
+                ax2.spines["bottom"].set_position(("outward", 36))
+                ax2.set_xlabel("time (s)")
+                ax2.set_xlim(ax.get_xlim())
+            else:
+                plt.setp(ax.get_xticklabels(), visible=False)
+
+    fig.tight_layout()
+
     if output_path is not None:
         output_path.parent.mkdir(exist_ok=True, parents=True)
-        plt.savefig(output_path)
+        fig.savefig(output_path)
     else:
         return fig
 
@@ -110,6 +162,7 @@ def plot_waveforms(waveform, picks, output_path=None, buffer=30):
     else:
         return fig
 
+
 def plot_training(history, output_path=None):
     """Plots the training history."""
     # Plot each metric provided by history.
@@ -125,4 +178,3 @@ def plot_training(history, output_path=None):
         plt.savefig(output_path)
     else:
         return fig
-
