@@ -1,4 +1,4 @@
-# coalpick
+# CoalPick
 
 This simple package demonstrates training and evaluating both a CNN P phase picker
 as well as [Baer Picker](https://docs.obspy.org/packages/autogen/obspy.signal.trigger.pk_baer.html#obspy.signal.trigger.pk_baer)
@@ -51,7 +51,9 @@ It will generate some plots in the `plots` directory.
 ## Explanation of files
 
 010_simple_example.py - Demonstrates training and evaluating both models on one dataset
+
 020_make_figures.py - Makes the histogram figures in Johnson el al., 2020.
+
 030_test_filling_method.py - examines how to fill missing data with minimal impact to CNN.
 
 ## References
