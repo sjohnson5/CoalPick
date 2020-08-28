@@ -1,5 +1,5 @@
 """
-CNN functions of CoalPick.
+CNN functions of coalpick.
 """
 
 from pathlib import Path
@@ -9,9 +9,9 @@ import keras
 import numpy as np
 import tensorflow as tf
 from keras.models import model_from_json
-from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.callbacks import EarlyStopping
 
-from CoalPick.prep_utils import normalize
+from coalpick.core import normalize
 
 
 def fit(

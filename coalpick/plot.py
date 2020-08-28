@@ -1,5 +1,5 @@
 """
-Plotting functionality of CoalPick.
+Plotting functionality of coalpick.
 """
 import numpy as np
 import pandas as pd
@@ -103,7 +103,7 @@ def plot_residuals(
         colors = ["#1f77b4", "#ff7f0e", "#8c564b"]
     stats = _get_stats(predictions, target)
 
-    fig = plt.figure(figsize=(4, 2 * len(predictions)))
+    fig = plt.figure(figsize=(3.5, 1.75 * len(predictions)))
     bins = np.arange(-rng, rng + 1)
 
     for cnt, (pkr, pred) in enumerate(predictions.items()):

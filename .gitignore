@@ -84,4 +84,10 @@ plots/*
 data.parquet
 
 # models trained for testing filling method
-models/filling/*
+temp_models/*
+
+# log
+log.txt
+
+# training times
+training_times*

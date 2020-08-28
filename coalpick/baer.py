@@ -1,15 +1,14 @@
 """
-Baer picker functions of CoalPick.
+Baer picker functions of coalpick.
 """
-
+import json
 from pathlib import Path
-from json import loads, dump
 
 import numpy as np
 from obspy.signal.trigger import pk_baer
 from scipy.optimize import differential_evolution
 
-from CoalPick.prep_utils import normalize
+from coalpick.core import normalize
 
 DEFAULT_BOUNDS = [
     (0, 50),  # tdownmax
@@ -79,8 +78,8 @@ def load_params(params_path: Path) -> dict:
     """
     params_path = Path(params_path)
     assert params_path.suffix == ".json", "structure_file must be a '.json' file"
-    json_str = params_path.open().read()
-    params = loads(json_str)
+    with open(params_path) as fi:
+        params = json.load(fi)
     return params
 
 
@@ -98,7 +97,7 @@ def save_params(params: dict, save_path: Path):
     assert save_path.suffix == ".json", "structure_file must be a '.json' file"
     save_path = Path(save_path)
     with open(save_path, "w") as file:
-        dump(params, file)
+        json.dump(params, file)
 
 
 def loss_fn(pred, target, sr, uncert=30):
@@ -126,7 +125,6 @@ def loss_fn(pred, target, sr, uncert=30):
     fitness = top / bottom
 
     loss = 1 / fitness
-    print(loss)
     return loss
 
 

@@ -13,15 +13,14 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from CoalPick.cnn import (
+from coalpick.core import load_data, shuffle_data, train_test_split
+from coalpick.cnn import (
     fit,
     predict,
-    load_data,
     load_model,
-    shuffle_data,
-    train_test_split,
 )
-from CoalPick.plot import plot_residuals, plot_waveforms
+
+from coalpick.plot import plot_residuals, plot_waveforms
 
 
 PRE_PICK_SAMPLES_TO_KEEP = (50, 100, 150)
@@ -179,7 +178,7 @@ if __name__ == "__main__":
     train_fraction = 0.75  # fraction of traces to use for training
     training_data_repeat = 3  # Number of times to repeat training data
     training_epochs = 5  # Number of passes through training dataset
-    model_path = Path("models/filling")
+    model_path = Path("temp_models/filling")
     mean_error_path = Path("plots") / "fill_error.png"
     test_results_path = Path("plots") / "fill_tests.pkl"
 
@@ -208,6 +207,3 @@ if __name__ == "__main__":
 
     # Plot results
     plot_fill_results(df, save_path=Path("plots") / "fill_results.png")
-
-    breakpoint()
-    df.iloc[df_name, model_name]

@@ -1,5 +1,5 @@
 """
-Setup script for CoalPick
+Setup script for coalpick
 """
 import glob
 from os.path import join, exists, isdir
@@ -12,7 +12,7 @@ here = Path(__file__).absolute().parent
 readme_path = here / "README.md"
 # get requirement paths
 package_req_path = here / "requirements.txt"
-version_file = here / "CoalPick" / "version.py"
+version_file = here / "coalpick" / "version.py"
 
 
 def find_packages(base_dir="."):
@@ -38,17 +38,6 @@ def get_version(version_path):
     return __version__
 
 
-def read_requirements(path, skip_if_missing=False):
-    """ Read a requirements.txt file, return a list. """
-    path = Path(path)
-    if not path.exists() and skip_if_missing:
-        return []
-    with Path(path).open("r") as fi:
-        lines = fi.readlines()
-    # remove any line comments
-    return [x for x in lines if not x.startswith("#")]
-
-
 def load_file(path):
     """ Load a file into memory. """
     with Path(path).open() as w:
@@ -59,18 +48,25 @@ def load_file(path):
 # --- get sub-packages
 
 
-requires = read_requirements(package_req_path)
+requires = """
+pyarrow == 1.0.0
+keras == 2.3.1
+matplotlib
+numpy == 1.18.1
+tensorflow == 1.13.1
+obspy == 1.2.2
+"""
 
 setup(
-    name="CoalPick",
+    name="coalpick",
     version=get_version(version_file),
     description="Example code for picking phases with CNN (Johnson et al., 2020)",
     long_description=load_file(readme_path),
     author="Sean Johnson ",
     author_email="sjohnson10@zagmail.gonzaga.edu",
     url="https://github.com/sjohnson5/SAMples",
-    packages=find_packages("CoalPick"),
-    package_dir={"CoalPick": "CoalPick"},
+    packages=find_packages("coalpick"),
+    package_dir={"coalpick": "coalpick"},
     license="GNU Lesser General Public License v3.0 or later (LGPLv3.0+)",
     zip_safe=False,
     keywords="CNN",
@@ -83,6 +79,6 @@ setup(
         "Topic :: Scientific/Engineering",
     ],
     test_suite="tests",
-    install_requires=read_requirements(package_req_path),
+    install_requires=requires,
     python_requires=">=3",
 )

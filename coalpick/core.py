@@ -1,9 +1,11 @@
 """
-Preprocessing functions of CoalPick.
+Core functionality of coalpick.
 """
-
+import time
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional, Tuple
+
 
 import pandas as pd
 import numpy as np
@@ -29,6 +31,9 @@ def load_data(data_path: Path, dataset: Optional[str] = None) -> pd.DataFrame:
     assert data_path.exists(), "data_file not found."
     assert data_path.suffix == ".parquet", "File must be a parquet file."
     df = pd.read_parquet(data_path, engine="pyarrow")
+    # drop any rows with nulls
+    has_null_in_row = df["data"].isnull().any(axis=1)
+    df = df[~has_null_in_row]
     if dataset is not None:
         df = df.loc[df["stats", "dataset"] == dataset]
     return df
@@ -101,3 +106,21 @@ def normalize(array, axis=-1):
     # mean = array.mean(axis=axis, keepdims=True)
     abs_max = np.abs(array).max(axis=axis, keepdims=True)
     return array / abs_max
+
+
+@contextmanager
+def time_it():
+    """
+    Simple context manager for timing what happens in context.
+
+    Returns a dict which will be populated with start, stop, duration
+    on exit.
+    """
+    start_time = time.time()
+    info = {}
+    yield info
+    end_time = time.time()
+    duration = end_time - start_time
+    info["duration"] = duration
+    info["start"] = start_time
+    info["stop"] = end_time
