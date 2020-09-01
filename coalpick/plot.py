@@ -145,8 +145,7 @@ def plot_residuals(
     if output_path is not None:
         output_path.parent.mkdir(exist_ok=True, parents=True)
         fig.savefig(output_path)
-    else:
-        return fig
+    return fig
 
 
 def plot_waveforms(waveform, picks, output_path=None, buffer=30):
@@ -165,8 +164,7 @@ def plot_waveforms(waveform, picks, output_path=None, buffer=30):
     if output_path is not None:
         output_path.parent.mkdir(exist_ok=True, parents=True)
         plt.savefig(output_path)
-    else:
-        return fig
+    return fig
 
 
 def plot_training(history, output_path=None):
@@ -182,5 +180,35 @@ def plot_training(history, output_path=None):
     if output_path is not None:
         output_path.parent.mkdir(exist_ok=True, parents=True)
         plt.savefig(output_path)
-    else:
-        return fig
+    return fig
+
+
+def plot_tranferability(df, dataset="A", output_path=None):
+    """
+    Plots the transferability of each dataset.
+    """
+    name_map = {
+        "cnn_all": "CNN",
+        "baer": "Baer",
+        "cnn_last": "CNN (last)",
+        "cnn_empty": "CNN (empty)",
+    }
+    fig = plt.figure(figsize=(3.5, 2.8))
+    df = df[df["dataset"] == dataset]
+    for name, sub in df.groupby("name"):
+        sub = sub.drop_duplicates(["name", "train_traces"])
+        num_training = sub["train_traces"].values
+        mae = sub["mean_absolute_error"].values
+        plt.plot(num_training, mae, ".-", label=name_map[name])
+
+    plt.legend()
+    plt.xlabel("Training Traces")
+    plt.ylabel("Mean Absolute Error (samples)")
+    plt.ylim(0.75, 3.5)
+    plt.grid(True)
+
+    if output_path is not None:
+        output_path.parent.mkdir(exist_ok=True, parents=True)
+        plt.tight_layout()
+        fig.savefig(output_path, transparent=True)
+    return fig

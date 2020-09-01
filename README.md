@@ -16,11 +16,11 @@ You must first install [Anaconda](https://docs.conda.io/projects/conda/en/latest
 
 Next, clone coalpick.
 ```bash
-clone https://github.com/sjohnson5/coalpick
+git clone https://github.com/sjohnson5/CoalPick
 ```
-and cd into the newly created coalpick directory.
+and cd into the newly created CoalPick directory.
 ```bash
-cd coalpick
+cd CoalPick
 ```
 Now download the data from the following dataverse repo:
 

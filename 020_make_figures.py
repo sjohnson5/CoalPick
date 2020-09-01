@@ -40,7 +40,7 @@ if __name__ == "__main__":
     # Load profiling DF if it exists
     try:
         df_results = pd.read_csv(results_path, index_col=0)
-    except FileExistsError:
+    except FileNotFoundError:
         df_results = pd.DataFrame(index=datasets, columns=cols)
 
     # ------------------------------------- PREPROCESSING ---------------------------- #
@@ -51,6 +51,7 @@ if __name__ == "__main__":
         print(f"Working on {dataset}")
 
         expected_cnn_weights_path = out_model_path / dataset / "cnn_weights.hdf5"
+
         expected_baer_params_path = out_model_path / dataset / "baer_params.json"
         plot_path = Path("plots") / dataset
 
