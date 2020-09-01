@@ -95,8 +95,9 @@ if __name__ == "__main__":
     for dataset, ds_df in df.groupby(("stats", "dataset")):
         if dataset == "B":  # B has no training data
             continue
+
         for training_trace_number in training_traces:
-            info = {"dataset": dataset, "train_traces": training_trace_number}
+            info = {"dataset": dataset, "tra/home/derrick_chambers/Downloads/README.mdin_traces": training_trace_number}
             print(f"Working on {dataset} for {training_trace_number} traces")
             model_path = out_model_path / dataset / f"{training_trace_number}"
             # path to CNN which was trained on all layers

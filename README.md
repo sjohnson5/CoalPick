@@ -12,24 +12,18 @@ in Johnson et al. (2020).
 Warning: We have only tested this code on Ubuntu 18.04. Using any other operating system
 may or may not work.
 
-You must first install [Anaconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html).
+To run these examples, you must install python. Because it is what we used to generate 
+this example, we strongly recommend using [Anaconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html).
+The following instructions assume that this is the python environment you are using.
 
-Next, clone coalpick.
+CoalPick may be downloaded using the following command:
 ```bash
 git clone https://github.com/sjohnson5/CoalPick
 ```
-and cd into the newly created CoalPick directory.
-```bash
-cd CoalPick
-```
-Now download the data from the following dataverse repo:
 
-https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/5DGFJB
+The remainder of these instructions assume you are working within the newly cloned `CoalPick` directory.
 
-and put the data.parquet file into the coalpick directory.
-
-
-Then create a conda environment using the provided environment.yml file:
+Within a terminal or conda prompt, create a new conda environment using the provided environment.yml file:
 ```bash
 conda env create --file environment.yml
 ```
@@ -39,22 +33,30 @@ Activate the newly created environment:
 conda activate coalpick
 ```
 
-## Running a simple example
+## Data
 
-Now examine the example_code.py script. It is well documented and should
-be easy to understand and modify. You can run it like so:
-```bash
-python example_code.py
-```
-It will generate some plots in the `plots` directory.
+The data for this example can be downloaded from:
+
+https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/5DGFJB
+
+The data.parquet file should be placed in the CoalPick directory.
 
 ## Explanation of files
 
-010_simple_example.py - Demonstrates training and evaluating both models on one dataset
+- `010_simple_example.py`: Demonstrates training and evaluating both models on one dataset
+- `020_make_figures.py`: Makes the histogram figures in Johnson el al., 2020.
+- `030_test_filling_method.py`: examines how to fill missing data with minimal impact to CNN.
+- `040_test_training_size.py`: explores the effects of the size of the training dataset
 
-020_make_figures.py - Makes the histogram figures in Johnson el al., 2020.
+## Running a simple example
 
-030_test_filling_method.py - examines how to fill missing data with minimal impact to CNN.
+The `010_simple_example.py` script is the main script for demonstrating the models. It is 
+well documented and should be easy to understand and modify. You can run it like so:
+```bash
+python 010_simple_example.py
+```
+It will generate some plots in the `plots` directory.
+
 
 ## References
 

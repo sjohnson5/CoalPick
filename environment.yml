@@ -13,4 +13,4 @@ dependencies:
   - scikit-learn
   - scipy>0.15
   - obspy
-  - logbook
+  - seaborn

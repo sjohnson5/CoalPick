@@ -23,6 +23,9 @@ if __name__ == "__main__":
     # but stop after no improvements to validation are observed for 5 epochs
     training_epochs = None
 
+    # the number of samples to plot in each dataset, if not defined uses 10
+    rng_map = {'C': 20, 'E': 20}
+
     # cnn parameters
     cnn_structure_path = Path("models/p_json_model.json")
     cnn_weights_path = Path("models/p_scsn_weights.hdf5")
@@ -149,6 +152,7 @@ if __name__ == "__main__":
             y_test,
             sr=sr,
             output_path=plot_path / "residual_histograms.png",
+            rng=rng_map.get(dataset, 10)
         )
 
         # Plot the first 5 waveforms and their picks.

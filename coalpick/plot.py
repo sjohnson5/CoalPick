@@ -1,9 +1,10 @@
 """
 Plotting functionality of coalpick.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
+import seaborn as sns
 
 
 def plot_residuals(
@@ -195,11 +196,12 @@ def plot_tranferability(df, dataset="A", output_path=None):
     }
     fig = plt.figure(figsize=(3.5, 2.8))
     df = df[df["dataset"] == dataset]
-    for name, sub in df.groupby("name"):
-        sub = sub.drop_duplicates(["name", "train_traces"])
-        num_training = sub["train_traces"].values
-        mae = sub["mean_absolute_error"].values
-        plt.plot(num_training, mae, ".-", label=name_map[name])
+    with sns.color_palette('colorblind'):
+        for name, sub in df.groupby("name"):
+            sub = sub.drop_duplicates(["name", "train_traces"])
+            num_training = sub["train_traces"].values
+            mae = sub["mean_absolute_error"].values
+            plt.plot(num_training, mae, ".-", label=name_map[name])
 
     plt.legend()
     plt.xlabel("Training Traces")
